@@ -1,8 +1,8 @@
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.css";
-export default function renderGallery(images) {
-  const gallery = document.getElementById("gallery");
 
+export default function renderGallery(images, currentPage, perPage, total) {
+  const gallery = document.getElementById("gallery");
   let item = '';
   images.forEach(image => {
 
@@ -32,10 +32,25 @@ export default function renderGallery(images) {
             </li>`;
   });
 
-  gallery.innerHTML = item;
+  const loadMoreButton = document.getElementById("loadMore");
 
-  const lightbox = new SimpleLightbox('.gallery-item', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
+  const loader = document.getElementById("loader");
+  loadMoreButton.style.display = 'none';
+  loader.style.display = 'block';
+  setTimeout(() => {
+    gallery.innerHTML += item;
+
+    const lightbox = new SimpleLightbox('.gallery-item', {
+      captionsData: 'alt',
+      captionDelay: 250,
+    });
+    if ((perPage * currentPage) < total ) {
+      loadMoreButton.style.display = 'block';
+    }
+
+    loader.style.display = 'none';
+
+  }, 1000);
+
+
 }

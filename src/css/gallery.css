@@ -54,3 +54,8 @@
   padding: 32px;
   display: none;
 }
+
+.load-more {
+  display: none;
+  margin: 10px auto;
+}
