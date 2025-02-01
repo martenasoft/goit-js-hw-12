@@ -45,9 +45,7 @@ export async function fetchImages(query, renderGallery) {
   }
 }
 
-// Функция для загрузки следующей страницы
 export function loadMore(renderGallery) {
-
   currentPage++;
   fetchImages(currentQuery, renderGallery);
 }
