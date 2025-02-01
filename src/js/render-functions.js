@@ -40,7 +40,7 @@ export default function renderGallery(images, currentPage, perPage, total) {
   setTimeout(() => {
     gallery.innerHTML += item;
 
-    const lightbox = new SimpleLightbox('.gallery-item', {
+    const lightbox = new SimpleLightbox('.gallery-item a', {
       captionsData: 'alt',
       captionDelay: 250,
     });
