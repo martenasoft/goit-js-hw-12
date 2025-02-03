@@ -1,12 +1,61 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.css";
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.css';
 
-export default function renderGallery(images, currentPage, perPage, total) {
-  const gallery = document.getElementById("gallery");
-  let item = '';
-  images.forEach(image => {
+class Gallery {
 
-    item += `<li class="gallery-item">
+  constructor(gallery, loader, loadMoreButton) {
+    this.gallery = gallery;
+    this.loader = loader;
+    this.loadMoreButton = loadMoreButton;
+  }
+
+  render(images) {
+
+    let item = '';
+    images.forEach((image) => {
+      item += this.template(image);
+    });
+
+    this.append(item);
+
+    const lightbox = new SimpleLightbox('.gallery-item a', {
+      captionsData: 'alt',
+      captionDelay: 250,
+    });
+
+    return this;
+  }
+
+  scroll() {
+    const item = document.getElementsByClassName('gallery-info-item');
+    if (item[0] === undefined) {
+      return;
+    }
+    const rect = item[0].getBoundingClientRect();
+    window.scrollBy(0, rect.height * 2);
+  }
+
+  clear() {
+    this.gallery.innerHTML = '';
+    return this;
+  }
+
+  append(value) {
+    this.gallery.innerHTML += value;
+    return this;
+  }
+
+  loaderLabel(isShow = false) {
+    this.loader.style.display = isShow ? 'block' : 'none';
+    return this;
+  }
+  loadMore(isShow = false) {
+    this.loadMoreButton.style.display = isShow ? 'block' : 'none';
+    return this;
+  }
+
+  template(image) {
+    return `<li class="gallery-item">
                 <a href="${image.largeImageURL}" >
                   <img src="${image.webformatURL}" alt="${image.tags}" data-source="${image.largeImageURL}">
                 </a>
@@ -30,27 +79,8 @@ export default function renderGallery(images, currentPage, perPage, total) {
                 </ul>
 
             </li>`;
-  });
-
-  const loadMoreButton = document.getElementById("loadMore");
-
-  const loader = document.getElementById("loader");
-  loadMoreButton.style.display = 'none';
-  loader.style.display = 'block';
-  setTimeout(() => {
-    gallery.innerHTML += item;
-
-    const lightbox = new SimpleLightbox('.gallery-item a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
-    if ((perPage * currentPage) < total ) {
-      loadMoreButton.style.display = 'block';
-    }
-
-    loader.style.display = 'none';
-
-  }, 1000);
-
-
+  }
 }
+
+
+export default Gallery;

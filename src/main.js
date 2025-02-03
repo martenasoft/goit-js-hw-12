@@ -1,30 +1,59 @@
-import {fetchImages, loadMore} from './js/pixabay-api.js'
+import fetchImages from './js/pixabay-api.js'
 import "izitoast/dist/css/iziToast.min.css";
-import renderGallery from './js/render-functions.js'
+import Gallery from './js/render-functions.js';
+import iziToast from 'izitoast';
+
 
 const form = document.getElementById("searchForm");
+const gallery =  new Gallery(
+  document.getElementById("gallery"),
+  document.getElementById('loader'),
+  document.getElementById('loadMore')
+);
 
-const loadMoreButton = document.getElementById("loadMore");
+let currentQuery = '';
+
 form.addEventListener("submit", async (event) => {
-
-  const searchQuery = document.getElementById("searchQuery");
-  const submitButton = document.getElementById("submitButton");
-  const gallery = document.getElementById("gallery");
-
   event.preventDefault();
-  const query = searchQuery.value.trim();
-
-  if (query) {
-    gallery.style.display = 'none';
-    submitButton.disabled = searchQuery.disabled = true;
-    await fetchImages(query, renderGallery);
-    submitButton.disabled = searchQuery.disabled = false;
-    gallery.style.display = 'flex';
-
+  let query = document.getElementById("searchQuery").value.trim();
+  let isClear = (query !== currentQuery);
+  if (isClear) {
+    currentQuery = query;
+    gallery.clear(false);
   }
 
+  gallery
+    .loadMore(false)
+    .loaderLabel(false);
+
+  fetchImages(query, isClear)
+    .then((result) => {
+
+      gallery
+        .loaderLabel(false)
+        .loadMore((result.currentPage * result.perPage) < result.response.data.total)
+        .render(result.response.data.hits)
+        .scroll()
+      ;
+
+      if (result.response.data.total === 0 && isClear) {
+        gallery
+          .loaderLabel(false);
+
+        iziToast.error({
+          title: 'Error',
+          message: 'Sorry, there are no images matching your search query. Please try again!',
+        });
+
+        return;
+      }
+
+    }).catch(error => {
+
+    iziToast.error({
+      title: 'Error',
+      message: 'Something went wrong. Please try again later.',
+    });
+  });
+
 });
-
-loadMoreButton.addEventListener("click", () => loadMore(renderGallery));
-
-
