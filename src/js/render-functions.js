@@ -27,12 +27,14 @@ class Gallery {
   }
 
   scroll() {
-    const item = document.getElementsByClassName('gallery-info-item');
-    if (item[0] === undefined) {
-      return;
-    }
-    const rect = item[0].getBoundingClientRect();
-    window.scrollBy(0, rect.height * 2);
+    const galleryCard = document.getElementById('gallery');
+
+    const rect = galleryCard.getBoundingClientRect();
+    //window.scrollBy(0, rect.height * 2);
+    window.scrollTo({
+      top: rect.height * 2,
+      behavior: "smooth"
+    });
   }
 
   clear() {
